@@ -34,14 +34,27 @@ VITE_AWS_BUCKET_NAME=${4:-'your_bucket_name'}
 EOL
 fi
 
-# Install dependencies
-echo "Installing dependencies..."
-npm install
+# Check if Docker is installed
+if command -v docker &> /dev/null; then
+  echo "🐳 Docker is installed, using Docker deployment..."
+  
+  # Build and run with Docker
+  docker-compose up --build -d
+  
+  echo "✅ Docker deployment complete!"
+  echo "Access the application at http://localhost:5173"
+else
+  echo "⚠️ Docker not found, falling back to local deployment..."
+  
+  # Install dependencies
+  echo "Installing dependencies..."
+  npm install
 
-# Build the project
-echo "Building the project..."
-npm run build
+  # Build the project
+  echo "Building the project..."
+  npm run build
 
-echo "✅ Setup complete!"
-echo "To start the development server, run: npm run dev"
-echo "To preview the production build, run: npm run preview"
+  echo "✅ Setup complete!"
+  echo "To start the development server, run: npm run dev"
+  echo "To preview the production build, run: npm run preview"
+fi
