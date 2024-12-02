@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+echo "🚀 Setting up AWS Photo Manager..."
+
+# Create project directory if it doesn't exist
+if [ ! -d "photo-manager" ]; then
+  mkdir photo-manager
+fi
+
+# Copy all project files to the new directory
+cp -r * photo-manager/ 2>/dev/null || true
+cd photo-manager
+
+# Initialize git and create .gitignore
+echo "node_modules
+dist
+.env
+.DS_Store
+*.log" > .gitignore
+
+# Create .env file with provided credentials
+echo "Creating .env file with provided credentials..."
+if [ -f ../.env ]; then
+  cp ../.env .env
+else
+  cat > .env << EOL
+VITE_AWS_ACCESS_KEY_ID=${1:-'your_access_key_id'}
+VITE_AWS_SECRET_ACCESS_KEY=${2:-'your_secret_access_key'}
+VITE_AWS_REGION=${3:-'your_region'}
+VITE_AWS_BUCKET_NAME=${4:-'your_bucket_name'}
+EOL
+fi
+
+# Install dependencies
+echo "Installing dependencies..."
+npm install
+
+# Build the project
+echo "Building the project..."
+npm run build
+
+echo "✅ Setup complete!"
+echo "To start the development server, run: npm run dev"
+echo "To preview the production build, run: npm run preview"
