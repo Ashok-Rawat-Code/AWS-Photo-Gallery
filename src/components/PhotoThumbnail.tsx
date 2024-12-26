@@ -1,6 +1,5 @@
 import React from 'react';
-import { TrashIcon } from '@heroicons/react/24/outline';
-import { Photo } from '../types';
+import { TrashIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 interface PhotoThumbnailProps {
   photo: Photo;
@@ -10,6 +9,7 @@ interface PhotoThumbnailProps {
   onSelect: (key: string) => void;
   onClick: () => void;
   onDelete: () => void;
+  onMove: () => void;
 }
 
 export function PhotoThumbnail({
@@ -19,7 +19,8 @@ export function PhotoThumbnail({
   isSelectionMode,
   onSelect,
   onClick,
-  onDelete
+  onDelete,
+  onMove
 }: PhotoThumbnailProps) {
   return (
     <div className="relative group aspect-square">
@@ -36,7 +37,7 @@ export function PhotoThumbnail({
         />
       </div>
 
-      {/* Checkbox for selection */}
+      {/* Selection checkbox */}
       <div
         className={`absolute top-2 left-2 z-10 transition-opacity duration-200
           ${isSelectionMode || isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
@@ -54,20 +55,31 @@ export function PhotoThumbnail({
         </label>
       </div>
 
-      {/* Delete button */}
+      {/* Action buttons */}
       {!isSelectionMode && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          disabled={isDeleting}
-          className={`absolute top-2 right-2 p-2 bg-red-500 rounded-full 
-            transition-all duration-200 touch-manipulation
-            ${isDeleting ? 'opacity-50 cursor-not-allowed' : 'opacity-0 group-hover:opacity-100'}`}
-        >
-          <TrashIcon className="w-5 h-5 text-white" />
-        </button>
+        <div className="absolute bottom-2 left-2 right-2 flex justify-center gap-2 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onMove();
+            }}
+            className="flex-1 flex items-center justify-center px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 max-w-[100px]"
+          >
+            <ArrowRightIcon className="w-4 h-4 mr-1" />
+            Move
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            disabled={isDeleting}
+            className="flex-1 flex items-center justify-center px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 max-w-[100px]"
+          >
+            <TrashIcon className="w-4 h-4 mr-1" />
+            Delete
+          </button>
+        </div>
       )}
     </div>
   );

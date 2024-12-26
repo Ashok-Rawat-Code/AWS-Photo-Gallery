@@ -1,5 +1,3 @@
-#Author: Ashok Rawat
-
 # AWS S3 Photo Manager
 
 A React-based photo management application that uses AWS S3 for storage. Built with Vite, TypeScript, and Tailwind CSS.
@@ -22,6 +20,7 @@ A React-based photo management application that uses AWS S3 for storage. Built w
 - npm
 - AWS Account with S3 bucket
 - AWS credentials with appropriate S3 permissions
+- Docker (optional)
 
 ## Setup
 
@@ -37,11 +36,18 @@ chmod +x deploy-local.sh
 ./deploy-local.sh
 ```
 
-3. Start the development server:
-```bash
-cd photo-manager
-npm run dev
-```
+The script will automatically detect if Docker is installed and choose the appropriate deployment method.
+
+### Docker Deployment
+If Docker is installed, the application will be built and run in a Docker container:
+- The application will be available at http://localhost:5173
+- Environment variables will be passed from your .env file to the container
+
+### Local Deployment
+If Docker is not available, the script will:
+- Install dependencies
+- Build the project
+- Provide instructions for running the development server
 
 ## Environment Variables
 
@@ -59,6 +65,12 @@ VITE_AWS_BUCKET_NAME=your_bucket_name
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build locally
+
+## Docker Commands
+
+- `docker-compose up --build` - Build and start the container
+- `docker-compose down` - Stop and remove the container
+- `docker-compose logs` - View container logs
 
 ## Security Note
 

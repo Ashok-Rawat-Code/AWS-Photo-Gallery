@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { PhotoUploader } from './components/PhotoUploader';
 import { PhotoGrid } from './components/PhotoGrid';
 import { FolderNavigation } from './components/FolderNavigation';
+import { FolderActions } from './components/FolderActions';
+import { MovePhotoModal } from './components/MovePhotoModal';
 import { useS3Photos } from './hooks/useS3Photos';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
@@ -9,6 +11,8 @@ function App() {
   const [currentPath, setCurrentPath] = useState<string>('');
   const { photos, folderStructure, isLoading, refreshPhotos } = useS3Photos(currentPath);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
 
   const handleDelete = (key: string) => {
     refreshPhotos();
@@ -22,6 +26,10 @@ function App() {
   const handleNavigateUp = () => {
     const newPath = currentPath.split('/').slice(0, -2).join('/');
     setCurrentPath(newPath ? `${newPath}/` : '');
+  };
+
+  const handleMove = () => {
+    setIsMoveModalOpen(true);
   };
 
   return (
@@ -54,6 +62,10 @@ function App() {
           `}
         >
           <div className="h-full overflow-y-auto p-4">
+            <FolderActions
+              currentPath={currentPath}
+              onFolderCreated={refreshPhotos}
+            />
             <FolderNavigation
               currentPath={currentPath}
               folderStructure={folderStructure}
@@ -66,14 +78,6 @@ function App() {
         {/* Main Content */}
         <div className="flex-1 p-4">
           <div className="max-w-7xl mx-auto">
-            {/* Desktop Header */}
-            <div className="hidden lg:flex justify-between items-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Photo Manager</h1>
-              <div className="text-sm text-gray-600">
-                Current location: {currentPath || 'Root'}
-              </div>
-            </div>
-            
             <div className="bg-white rounded-lg shadow p-4 mb-8">
               <PhotoUploader currentPath={currentPath} onUploadSuccess={refreshPhotos} />
             </div>
@@ -84,15 +88,26 @@ function App() {
               <div className="text-center text-gray-600">No photos or folders found</div>
             ) : (
               <>
-                <div className="mb-4 text-sm text-gray-600">
-                  Found {photos.length} photos in this location
-                </div>
-                <PhotoGrid photos={photos} onDelete={handleDelete} />
+                <PhotoGrid
+                  photos={photos}
+                  onDelete={handleDelete}
+                  onMove={handleMove}
+                  setSelectedPhotos={setSelectedPhotos}
+                />
               </>
             )}
           </div>
         </div>
       </div>
+
+      <MovePhotoModal
+        isOpen={isMoveModalOpen}
+        onClose={() => setIsMoveModalOpen(false)}
+        selectedPhotos={selectedPhotos}
+        currentPath={currentPath}
+        folderStructure={folderStructure}
+        onMove={refreshPhotos}
+      />
     </div>
   );
 }

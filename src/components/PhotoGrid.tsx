@@ -9,9 +9,11 @@ import { Photo } from '../types';
 interface PhotoGridProps {
   photos: Photo[];
   onDelete: (key: string) => void;
+  onMove: () => void;
+  setSelectedPhotos: (photos: string[]) => void;
 }
 
-export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
+export function PhotoGrid({ photos, onDelete, onMove, setSelectedPhotos }: PhotoGridProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const { selectedItems, isSelectionMode, toggleSelection, clearSelection, startSelection } = useSelection();
   const { deletingKeys, handleDelete } = usePhotoDelete({ onDelete, clearSelection });
@@ -24,12 +26,26 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
     }
   };
 
+  // Update selected photos whenever selection changes
+  React.useEffect(() => {
+    setSelectedPhotos(Array.from(selectedItems));
+  }, [selectedItems, setSelectedPhotos]);
+
+  const handleMoveClick = () => {
+    if (selectedPhoto) {
+      setSelectedPhotos([selectedPhoto.key]);
+      setSelectedPhoto(null);
+    }
+    onMove();
+  };
+
   return (
     <>
       <PhotoGridHeader
         isSelectionMode={isSelectionMode}
         selectedCount={selectedItems.size}
         onDelete={() => handleDelete(Array.from(selectedItems))}
+        onMove={onMove}
         onClearSelection={clearSelection}
         startSelection={startSelection}
       />
@@ -45,6 +61,7 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
             onSelect={toggleSelection}
             onClick={() => handlePhotoClick(photo)}
             onDelete={() => handleDelete([photo.key])}
+            onMove={handleMoveClick}
           />
         ))}
       </div>
@@ -54,6 +71,7 @@ export function PhotoGrid({ photos, onDelete }: PhotoGridProps) {
           isOpen={true}
           onClose={() => setSelectedPhoto(null)}
           imageUrl={selectedPhoto.url}
+          onMove={handleMoveClick}
         />
       )}
     </>
