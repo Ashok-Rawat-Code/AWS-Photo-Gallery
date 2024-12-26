@@ -1,3 +1,5 @@
+#Author: Ashok Rawat
+
 # AWS S3 Photo Manager
 
 A React-based photo management application that uses AWS S3 for storage. Built with Vite, TypeScript, and Tailwind CSS.
